@@ -1,0 +1,60 @@
+groups:
+- name: Linux Server Performance Alert Rules
+  rules:
+#HighCPUUsage-Alert
+  - alert: HighCpuUsage
+    expr: 100 - (avg by (instance) (irate(node_cpu_seconds_total{mode="idle"}[3m])) * 100) > 80
+    for: 3m
+    labels:
+      severity: 'critical'
+    annotations:
+      summary: "High CPU usage detected on {{ $labels.instance }}"
+      description: "CPU usage on instance {{ $labels.instance }} is above 80% for more than 3 minute."
+
+  - alert: VeryHighCpuUsage
+    expr: 100 - (avg by (instance) (irate(node_cpu_seconds_total{mode="idle"}[1m])) * 100) > 90
+    for: 1m
+    labels:
+      severity: 'critical'
+    annotations:
+      summary: "Very High CPU usage detected on {{ $labels.instance }}"
+      description: "CPU usage on instance {{ $labels.instance }} is above 90% for more than 1 minute."
+
+#HighMemoryUsage-Alert
+  - alert: HighMemoryUsage
+    expr: (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes * 100 > 80
+    for: 3m
+    labels:
+      severity: warning
+    annotations:
+      summary: "High Memory Usage on {{ $labels.instance }}"
+      description: "Memory usage is above 80% for more than 3 minute."
+
+  - alert: VeryHighMemoryUsage
+    expr: (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes * 100 > 90
+    for: 1m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Very High Memory Usage on {{ $labels.instance }}"
+      description: "Memory usage is above 90% for more than 1 minute."
+
+#HighStorageUsage-Alert
+  - alert: HighDiskUsage
+    expr: (node_filesystem_size_bytes - node_filesystem_free_bytes) / node_filesystem_size_bytes * 100 > 80
+    for: 10m
+    labels:
+      severity: warning
+    annotations:
+      summary: "High Storage Usage detected"
+      description: "The storage usage has been above 80% for the past 10 minutes."
+
+  - alert: VeryHighDiskUsage
+    expr: (node_filesystem_size_bytes - node_filesystem_free_bytes) / node_filesystem_size_bytes * 100 > 90
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Very high Storage Usage detected"
+      description: "The storage usage has been above 90% for the past 5 minutes."
+

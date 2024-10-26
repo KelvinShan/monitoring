@@ -1,0 +1,46 @@
+version: '3.1'
+services:
+  prometheus:
+    container_name: prome
+    image: ubuntu/prometheus
+    ports:
+      - "7000:9090"
+    volumes:
+      - ./config/prometheus.yaml:/etc/prometheus/prometheus.yaml
+      - ./config/linux-alerts.yaml:/etc/prometheus/
+      - ./config/win-alerts.yaml:/etc/prometheus/
+      - /var/lib/docker/volumes/prome-volume/_data:/etc/prometheus/
+    command:  
+      - "--config.file=/etc/prometheus/prometheus.yaml"
+    network:
+      - monitor-network
+    restart: always
+
+  alertmanager:
+    container_name: alert-manager
+    image: ubuntu/alertmanager
+    ports:
+      - "7001:9093"
+    volumes:  
+      - ./config/alertmanager.yaml:/etc/alertmanager/alertmanager.yaml
+    command:
+      - "--config.file=/etc/alertmanager/alertmanager.yaml"
+    network:
+      - monitor-network
+    restart: always
+
+  grafana:
+    container_name: grafana
+    image: grafana/grafana
+    ports: 
+      - "7002:3000"
+    volumes:
+      - /var/lib/docker/volumes/grafana-volume/_data:/var/lib/grafana/
+    network:
+      - monitor-network
+    restart: always 
+
+network:
+  monitor-network:
+    external: true
+      

@@ -1,0 +1,50 @@
+groups:
+- name: Windows-Server-Performance-Alerts
+  rules:
+  ###CPUUsageAlert
+  - alert: HighCPUUsage
+    expr: 100 - (avg by(instance) (rate(windows_cpu_time_total{mode="idle"}[2m])) * 100) > 80
+    for: 2m
+    labels:
+      severity: 'critical'
+    annotations:
+      summary: "High CPU usage detected on instance {{ $labels.instance }}"
+      description: "CPU usage has been above 80% for more than 2 minutes."
+
+  - alert: VeryHighCPUUsage
+    expr: 100 - (avg by(instance) (rate(windows_cpu_time_total{mode="idle"}[1m])) * 100) > 90
+    for: 1m
+    labels:
+      severity: 'critical'
+    annotations:
+      summary: "Very High CPU usage detected on instance {{ $labels.instance }}"
+      description: "CPU usage has been above 90% for more than 1 minutes."
+
+###HighMemoryUsageAlert
+  - alert: HighMemoryUsage
+    expr: (windows_cs_physical_memory_bytes - windows_os_physical_memory_free_bytes) / windows_cs_physical_memory_bytes * 100 > 80
+    for: 5m
+    labels:
+      severity: 'critical'
+    annotations:
+      summary: "High Memory Usage on {{ $labels.instance }}"
+      description: "Memory usage is above 80% for more than 5 minutes on instance {{ $labels.instance }}."
+
+  - alert: VeryHighMemoryUsage
+    expr: (windows_cs_physical_memory_bytes - windows_os_physical_memory_free_bytes) / windows_cs_physical_memory_bytes * 100 > 90
+    for: 1m
+    labels:
+      severity: 'critical'
+    annotations:
+      summary: "Very High Memory Usage on {{ $labels.instance }}"
+      description: "Memory usage is above 90% for more than 1 minutes on instance {{ $labels.instance }}."
+
+# DiskUsageAlert
+  - alert: HighDiskUsage
+    expr: windows_logical_disk_free_bytes / windows_logical_disk_size_bytes * 100 < 20
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      Summary: "High Storage usage detected on instance {{ $labels.instance }}"
+      description: "Storage usage is above 80% for more than 5 minutes."
