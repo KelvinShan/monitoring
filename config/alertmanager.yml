@@ -6,5 +6,5 @@ receivers:
 - name: 'telegram-notifications'
   telegram_configs:
   - send_resolved: true
-    bot_token: '7111249492:AAHiq7xBuHKdORZTu5uxmrjpTVWLA80JSpo'
+    bot_token: '[Place-Your-Token]'
     chat_id: -4155099457
